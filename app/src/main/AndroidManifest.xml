@@ -11,9 +11,8 @@
         android:theme="@style/Theme.ShowcaseApp">
         <!--            android:name=".ComposeRouterMainActivity"-->
         <activity
-            android:name=".GoogleNavigationMainActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.ShowcaseApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
