@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
-import com.example.showcaseapp.auth.AuthScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.showcaseapp.ui.theme.ShowcaseAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +22,28 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    AuthScreen()
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = NavigationScreen.welcome
+                    ) {
+                        composable(NavigationScreen.welcome) {
+                            WelcomeScreen(
+                                goToAuth = {
+                                    navController.navigate(NavigationScreen.auth)
+                                },
+                                goToTerms = {
+                                    navController.navigate(NavigationScreen.terms)
+                                }
+                            )
+                        }
+                        composable(NavigationScreen.auth) {
+                            TODO()
+                        }
+                        composable(NavigationScreen.terms) {
+                            TODO()
+                        }
+                    }
                 }
             }
         }
