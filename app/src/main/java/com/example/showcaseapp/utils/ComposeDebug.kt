@@ -1,4 +1,4 @@
-package com.example.showcaseapp.auth
+package com.example.showcaseapp.utils
 
 import android.util.Log
 import androidx.compose.runtime.Composable
