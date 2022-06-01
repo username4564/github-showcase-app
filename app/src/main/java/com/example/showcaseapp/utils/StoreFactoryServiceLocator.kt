@@ -4,6 +4,8 @@ import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import com.example.showcaseapp.BuildConfig
 import com.example.showcaseapp.WelcomeStore
 import com.example.showcaseapp.WelcomeStoreFactory
+import com.example.showcaseapp.auth.AuthStore
+import com.example.showcaseapp.auth.AuthStoreFactory
 import kotlinx.coroutines.Dispatchers
 
 internal object StoreFactoryServiceLocator {
@@ -19,6 +21,13 @@ internal object StoreFactoryServiceLocator {
 
     fun getWelcomeStore(): WelcomeStore {
         return WelcomeStoreFactory(
+            storeFactory = storeFactoryInstance,
+            mainContext = Dispatchers.Main,
+        ).create()
+    }
+
+    fun getAuthStore(): AuthStore {
+        return AuthStoreFactory(
             storeFactory = storeFactoryInstance,
             mainContext = Dispatchers.Main,
         ).create()

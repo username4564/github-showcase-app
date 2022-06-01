@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.showcaseapp.auth.AuthScreen
 import com.example.showcaseapp.ui.theme.ShowcaseAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +39,11 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(NavigationScreen.auth) {
-                            TODO()
+                            AuthScreen(
+                                goToNext = {
+                                    TODO()
+                                }
+                            )
                         }
                         composable(NavigationScreen.terms) {
                             TODO()
