@@ -9,15 +9,18 @@ import com.arkivanov.mvikotlin.extensions.coroutines.coroutineExecutorFactory
 import com.example.showcaseapp.auth.AuthStore.Intent
 import com.example.showcaseapp.auth.AuthStore.Label
 import com.example.showcaseapp.auth.AuthStore.State
+import com.example.showcaseapp.domain.auth.AuthResultError
+import com.example.showcaseapp.domain.auth.AuthResultSuccess
+import com.example.showcaseapp.domain.auth.AuthResultUnexpectedUrl
+import com.example.showcaseapp.domain.auth.GetAuthUrl
+import com.example.showcaseapp.domain.auth.GetAuthUrlResult
 import kotlin.coroutines.CoroutineContext
 
-// TODO: ET 01.06.2022 ! 
-// TODO: ET 02.06.2022 register app 
-// TODO: ET 02.06.2022 add web view open link 
-//https://github.com/login/oauth/authorize?scope=user:email&client_id=<%= client_id %>"
-// TODO: ET 02.06.2022 wait callback 
+// TODO: ET 01.06.2022 !
 // TODO: ET 02.06.2022 send auth request
 internal class AuthStoreFactory(
+    private val getAuthUrl: GetAuthUrl,
+    private val getAuthUrlResult: GetAuthUrlResult,
     private val storeFactory: StoreFactory,
     private val mainContext: CoroutineContext,
 ) {
@@ -27,14 +30,16 @@ internal class AuthStoreFactory(
         object : AuthStore,
             Store<Intent, State, Label> by storeFactory.create<Intent, Unit, Msg, State, Label>(
                 name = "AuthStore",
-                initialState = State,
+                initialState = State.Content(getAuthUrl.invoke()),
                 bootstrapper = SimpleBootstrapper(Unit),
                 executorFactory = coroutineExecutorFactory(mainContext) {
-                    onIntent<Intent.Auth> {
-                        publish(Label.GoToNext)
-                    }
-                    onIntent<Intent.Terms> {
-                        TODO()
+                    onIntent<Intent.OnUrlRequested> {
+                        when (getAuthUrlResult(it.url)) {
+                            is AuthResultError -> TODO()
+                            // TODO: ET 12.06.2022 add auth request
+                            is AuthResultSuccess -> publish(Label.GoToNext)
+                            is AuthResultUnexpectedUrl -> Unit
+                        }
                     }
                 },
                 reducer = { throw NotImplementedError("Its not required!") },

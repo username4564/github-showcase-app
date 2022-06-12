@@ -13,9 +13,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -26,55 +23,42 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.arkivanov.mvikotlin.extensions.coroutines.labels
-import com.arkivanov.mvikotlin.extensions.coroutines.states
 import com.example.showcaseapp.WelcomeStore.Intent
 import com.example.showcaseapp.ui.theme.textColorSecondary
 import com.example.showcaseapp.utils.Compose
 import com.example.showcaseapp.utils.LogCompositions
 import com.example.showcaseapp.utils.StoreFactoryServiceLocator
-import kotlinx.coroutines.flow.filterIsInstance
+import com.example.showcaseapp.utils.subscribeToStore
 
 @Composable
 internal fun WelcomeScreen(
-    goToAuth: () -> Unit = {},
-    goToTerms: () -> Unit = {}
-) {
-    // TODO: ET 31.05.2022 add store state holder?
-    val rememberStore = remember {
-        mutableStateOf(value = StoreFactoryServiceLocator.getWelcomeStore())
+    goToAuth: () -> Unit,
+    goToTerms: () -> Unit
+) = subscribeToStore(
+    factory = {
+        StoreFactoryServiceLocator.getWelcomeStore()
+    },
+    labels = {
+        when (it) {
+            is WelcomeStore.Label.GoToWebAuth -> goToAuth()
+            is WelcomeStore.Label.GoToTerms -> goToTerms()
+            null -> Unit
+        }
+    },
+    states = { state, store ->
+        when (state) {
+            is WelcomeStore.State -> WelcomeScreenContent(
+                onAuthClick = { store.accept(Intent.Auth) },
+                onTermsClick = { store.accept(Intent.Terms) },
+            )
+        }
     }
-    val store = rememberStore.value
-
-    val label = store
-        .labels
-        .filterIsInstance<WelcomeStore.Label>()
-        .collectAsState(initial = Unit)
-    when (label.value) {
-        is WelcomeStore.Label.GoToWebAuth -> goToAuth()
-        is WelcomeStore.Label.GoToTerms -> goToTerms()
-        else -> Unit
-    }
-
-    val state = store
-        .states
-        .filterIsInstance<WelcomeStore.State>()
-        .collectAsState(initial = Unit)
-    when (state.value) {
-        is WelcomeStore.State -> WelcomeScreenContent(
-            onAuthClick = { store.accept(Intent.Auth) },
-            onTermsClick = { store.accept(Intent.Terms) },
-        )
-        else -> Unit
-    }
-
-    LogCompositions("TAG", "AuthScreenPrepare, ${state.value}")
-}
+)
 
 @Composable
 internal fun WelcomeScreenContent(
-    onAuthClick: () -> Unit = {},
-    onTermsClick: () -> Unit = {},
+    onAuthClick: () -> Unit,
+    onTermsClick: () -> Unit,
 ) {
     LogCompositions("TAG", "AuthScreen")
     Column(
@@ -141,4 +125,7 @@ internal fun WelcomeScreenContent(
     showSystemUi = true
 )
 @Composable
-fun WelcomeScreenPreview() = WelcomeScreenContent()
+fun WelcomeScreenPreview() = WelcomeScreenContent(
+    onAuthClick = {},
+    onTermsClick = {},
+)
