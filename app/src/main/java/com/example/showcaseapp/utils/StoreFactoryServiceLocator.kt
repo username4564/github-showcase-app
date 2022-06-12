@@ -6,6 +6,8 @@ import com.example.showcaseapp.WelcomeStore
 import com.example.showcaseapp.WelcomeStoreFactory
 import com.example.showcaseapp.auth.AuthStore
 import com.example.showcaseapp.auth.AuthStoreFactory
+import com.example.showcaseapp.data.auth.AuthRepository
+import com.example.showcaseapp.domain.auth.GetAuthToken
 import com.example.showcaseapp.domain.auth.GetAuthUrl
 import com.example.showcaseapp.domain.auth.GetAuthUrlResult
 import kotlinx.coroutines.Dispatchers
@@ -29,9 +31,11 @@ internal object StoreFactoryServiceLocator {
     }
 
     fun getAuthStore(): AuthStore {
+        // TODO: ET 13.06.2022 split dependencies
         return AuthStoreFactory(
             getAuthUrl = GetAuthUrl(),
             getAuthUrlResult = GetAuthUrlResult(),
+            getAuthToken = GetAuthToken(AuthRepository()),
             storeFactory = storeFactoryInstance,
             mainContext = Dispatchers.Main,
         ).create()

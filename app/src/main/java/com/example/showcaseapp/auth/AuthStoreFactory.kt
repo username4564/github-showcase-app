@@ -12,15 +12,18 @@ import com.example.showcaseapp.auth.AuthStore.State
 import com.example.showcaseapp.domain.auth.AuthResultError
 import com.example.showcaseapp.domain.auth.AuthResultSuccess
 import com.example.showcaseapp.domain.auth.AuthResultUnexpectedUrl
+import com.example.showcaseapp.domain.auth.GetAuthToken
 import com.example.showcaseapp.domain.auth.GetAuthUrl
 import com.example.showcaseapp.domain.auth.GetAuthUrlResult
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 // TODO: ET 01.06.2022 !
-// TODO: ET 02.06.2022 send auth request
+// TODO: ET 02.06.2022 save auth token
 internal class AuthStoreFactory(
     private val getAuthUrl: GetAuthUrl,
     private val getAuthUrlResult: GetAuthUrlResult,
+    private val getAuthToken: GetAuthToken,
     private val storeFactory: StoreFactory,
     private val mainContext: CoroutineContext,
 ) {
@@ -34,10 +37,16 @@ internal class AuthStoreFactory(
                 bootstrapper = SimpleBootstrapper(Unit),
                 executorFactory = coroutineExecutorFactory(mainContext) {
                     onIntent<Intent.OnUrlRequested> {
-                        when (getAuthUrlResult(it.url)) {
+                        when (val result = getAuthUrlResult(it.url)) {
                             is AuthResultError -> TODO()
                             // TODO: ET 12.06.2022 add auth request
-                            is AuthResultSuccess -> publish(Label.GoToNext)
+                            is AuthResultSuccess -> {
+                                launch {
+                                    val authToken = getAuthToken(result.code)
+                                    TODO()
+//                                publish(Label.GoToNext)
+                                }
+                            }
                             is AuthResultUnexpectedUrl -> Unit
                         }
                     }
