@@ -15,16 +15,19 @@ import com.example.showcaseapp.domain.auth.AuthResultUnexpectedUrl
 import com.example.showcaseapp.domain.auth.GetAuthToken
 import com.example.showcaseapp.domain.auth.GetAuthUrl
 import com.example.showcaseapp.domain.auth.GetAuthUrlResult
+import com.example.showcaseapp.domain.auth.SetAuthToken
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-// TODO: ET 01.06.2022 !
-// TODO: ET 02.06.2022 save auth token
+// TODO: ET 13.06.2022 process request errors
+// TODO: ET 13.06.2022 process loading
 internal class AuthStoreFactory(
     private val getAuthUrl: GetAuthUrl,
     private val getAuthUrlResult: GetAuthUrlResult,
     private val getAuthToken: GetAuthToken,
+    private val setAuthToken: SetAuthToken,
     private val storeFactory: StoreFactory,
+    private val ioContext: CoroutineContext,
     private val mainContext: CoroutineContext,
 ) {
 
@@ -41,11 +44,12 @@ internal class AuthStoreFactory(
                             is AuthResultError -> TODO()
                             // TODO: ET 12.06.2022 add auth request
                             is AuthResultSuccess -> {
-                                launch {
+                                // TODO: ET 13.06.2022 show loading
+                                launch(ioContext) {
                                     val authToken = getAuthToken(result.code)
-                                    TODO()
-//                                publish(Label.GoToNext)
+                                    setAuthToken(authToken)
                                 }
+                                publish(Label.GoToNext)
                             }
                             is AuthResultUnexpectedUrl -> Unit
                         }

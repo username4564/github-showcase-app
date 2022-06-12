@@ -1,5 +1,7 @@
 package com.example.showcaseapp.data.auth
 
+import android.content.Context
+import androidx.core.content.edit
 import com.example.showcaseapp.data.auth.GitHubSecretConstants.clientId
 import com.example.showcaseapp.data.auth.GitHubSecretConstants.clientSecret
 import com.google.gson.Gson
@@ -9,7 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
-class AuthRepository {
+class AuthRepository(context: Context) {
     private val okHttpClient = run {
         val logging = HttpLoggingInterceptor().also {
             it.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -27,6 +29,9 @@ class AuthRepository {
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
 
+    private val sharedPreference = context
+        .getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE)
+
     suspend fun getAuthToken(code: String): String {
         return retrofit
             .create<GitHubService>()
@@ -34,8 +39,16 @@ class AuthRepository {
             .accessToken
     }
 
-    suspend fun setAuthToken(authToken: String) {
-        // TODO: ET 13.06.2022 !
+    suspend fun setAuthToken(token: String) {
+        sharedPreference.edit(commit = true) {
+            putString(keyAuthToken, token)
+        }
+    }
+
+    companion object {
+        private const val sharedPreferencesName = "Preferences"
+
+        private const val keyAuthToken = "AuthToken"
     }
 }
 

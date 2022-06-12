@@ -51,7 +51,7 @@ inline fun <reified T : Any> Store<*, *, T>.subscribeToLabels(
                 .collectLatest {
                     result.value = it
                     // TODO: ET 12.06.2022 WA ULTRA SCRATCH
-                    delay(10)
+                    delay(50)
                     result.value = null
                 }
         }
