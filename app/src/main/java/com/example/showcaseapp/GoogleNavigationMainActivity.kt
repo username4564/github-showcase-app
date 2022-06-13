@@ -91,7 +91,7 @@ private fun LogComposableLifecycle(name: String) {
 @Composable
 fun DefaultPreviewQ() {
     ShowcaseAppTheme {
-        Greeting("Android")
+        Greeting("Android") {}
     }
 }
 
