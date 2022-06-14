@@ -10,13 +10,15 @@ internal interface AuthStore : Store<Intent, State, Label> {
 
     // Serializable only for exporting events in Time Travel, no need otherwise.
     sealed class Intent : JvmSerializable {
-        class OnUrlRequested(val url: String) : Intent()
+        class WebUrlRequested(val url: String) : Intent()
+        object Retry : Intent()
     }
 
     // Serializable only for exporting events in Time Travel, no need otherwise.
     sealed class State : JvmSerializable {
         class Content(val authUrl: String) : State()
         object Loading : State()
+        object Error : State()
     }
 
     // Serializable only for exporting events in Time Travel, no need otherwise.

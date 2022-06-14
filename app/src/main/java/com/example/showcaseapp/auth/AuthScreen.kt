@@ -13,6 +13,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.showcaseapp.auth.AuthStore.Intent
 import com.example.showcaseapp.auth.AuthStore.Label
 import com.example.showcaseapp.auth.AuthStore.State
+import com.example.showcaseapp.utils.ContentError
+import com.example.showcaseapp.utils.ContentLoading
 import com.example.showcaseapp.utils.StoreFactoryServiceLocator
 import com.example.showcaseapp.utils.subscribeToStore
 
@@ -31,9 +33,10 @@ internal fun AuthScreen(goToNext: () -> Unit) = subscribeToStore(
         when (state) {
             is State.Content -> AuthScreenContent(
                 authUrl = state.authUrl,
-                onUrlLoading = { store.accept(Intent.OnUrlRequested(it)) }
+                onUrlLoading = { store.accept(Intent.WebUrlRequested(it)) }
             )
-            State.Loading -> TODO()
+            State.Loading -> ContentLoading()
+            State.Error -> ContentError(onRetry = { store.accept(Intent.Retry) })
             null -> Unit
         }
     }
