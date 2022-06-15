@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Showcase App</string>
 
+    <string name="content.loading_error">Не удалось загрузить данные</string>
+    <string name="content.retry">Попробовать еще раз</string>
+
     <string name="auth.authorize">Авторизоваться</string>
     <string name="auth.terms">Условия соглашения</string>
 </resources>
