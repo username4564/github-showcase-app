@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.states
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
@@ -30,38 +29,27 @@ fun <Intent : Any, State : Any, Label : Any> rememberStore(
 inline fun <reified Intent : Any, reified State : Any, reified Label : Any> subscribeToStore(
     crossinline factory: () -> Store<Intent, State, Label>,
     states: @Composable (State?, Store<Intent, State, Label>) -> Unit,
-    labels: @Composable (Label?) -> Unit,
+    crossinline labels: (Label?) -> Unit,
 ) {
     val store = rememberStore { factory() }
     states(store.subscribeToStatesValue(), store)
-    labels(store.subscribeToLabelsValue())
+    store.subscribeToLabels(labels)
 }
 
 // TODO: ET 12.06.2022 its scratch
 @Composable
-inline fun <reified T : Any> Store<*, *, T>.subscribeToLabels(
-    context: CoroutineContext = EmptyCoroutineContext
-): State<T?> {
-    val result = remember { mutableStateOf(null as T?) }
-    LaunchedEffect(this, context) {
+inline fun <reified T : Any> Store<*, *, T>.subscribeToLabels(crossinline labelsFun: (T?) -> Unit) {
+    LaunchedEffect(this, EmptyCoroutineContext) {
         launch {
             labels
                 .filterIsInstance<T?>()
                 .filter { it != null }
                 .collectLatest {
-                    result.value = it
-                    // TODO: ET 12.06.2022 WA ULTRA SCRATCH
-                    delay(50)
-                    result.value = null
+                    labelsFun.invoke(it)
                 }
         }
     }
-    return result
 }
-
-// TODO: ET 12.06.2022 its scratch
-@Composable
-inline fun <reified T : Any> Store<*, *, T>.subscribeToLabelsValue(): T? = subscribeToLabels().value
 
 // TODO: ET 12.06.2022 its scratch
 @Composable
