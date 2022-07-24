@@ -29,9 +29,9 @@ jobs:
 
       - name: Build release artifact
           run:
+            ./gradlew assembleRelease --stacktrace
 #          |
 #            ./gradlew test
-            ./gradlew assembleRelease --stacktrace
 #            ./gradlew bundleRelease
 
       - name: Upload signed APK
