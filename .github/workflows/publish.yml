@@ -27,6 +27,13 @@ jobs:
           token: ${{ secrets.KEYSTORE_ACCESS_TOKEN }}
           path: app/keystore
 
+      - name: Build release artifact
+          run:
+#          |
+#            ./gradlew test
+            ./gradlew assembleRelease --stacktrace
+#            ./gradlew bundleRelease
+
       - name: Upload signed APK
         uses: actions/upload-artifact@v2
         with:
