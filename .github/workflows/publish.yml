@@ -30,7 +30,7 @@ jobs:
       - name: Build release APK and AAB after test
         run: |
         ./gradlew assembleRelease
-        ./gradlew bundleRelease
+#        ./gradlew bundleRelease
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v2
